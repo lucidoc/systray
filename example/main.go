@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"time"
 
+	"lucidoc/systray/example/icon"
+
 	"fyne.io/systray"
-	"fyne.io/systray/example/icon"
 )
 
 func main() {

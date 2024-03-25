@@ -1,4 +1,4 @@
-module fyne.io/systray
+module lucidoc/systray
 
 go 1.19
 
