@@ -6,7 +6,7 @@ import (
 
 	"lucidoc/systray/example/icon"
 
-	"fyne.io/systray"
+	"lucidoc/systray/"
 )
 
 func main() {
