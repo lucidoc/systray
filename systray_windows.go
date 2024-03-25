@@ -6,6 +6,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -14,6 +15,7 @@ import (
 	"sync"
 	"sync/atomic"
 	"syscall"
+	"time"
 	"unsafe"
 
 	"golang.org/x/sys/windows"
@@ -345,7 +347,46 @@ func (t *winTray) wndProc(hWnd windows.Handle, message uint32, wParam, lParam ui
 	return
 }
 
+var (
+	user32          = syscall.NewLazyDLL("user32.dll")
+	procFindWindowW = user32.NewProc("FindWindowW")
+)
+
+// findWindow calls the FindWindow Windows API function to find a window by class name.
+// Returns the handle to the window, or 0 if the window is not found.
+func findWindow(className string) uintptr {
+	lpClassName, _ := syscall.UTF16PtrFromString(className)
+	hwnd, _, _ := procFindWindowW.Call(uintptr(unsafe.Pointer(lpClassName)), 0)
+	return hwnd
+}
+
+// systemTrayIsReady checks if the system tray (Shell_TrayWnd) is available.
+func systemTrayIsReady() bool {
+	return findWindow("Shell_TrayWnd") != 0
+}
+
+func (t *winTray) waitForSystrayReady(timeout time.Duration) bool {
+	endTime := time.Now().Add(timeout)
+	for time.Now().Before(endTime) {
+		if systemTrayIsReady() {
+			return true
+		}
+		// Wait for a short period before checking again
+		time.Sleep(1 * time.Second)
+		fmt.Println("Waiting for system tray to be ready...")
+	}
+	// Timeout reached without system tray becoming ready
+	fmt.Println("System tray did not become ready within the timeout period.")
+	return false
+}
+
 func (t *winTray) initInstance() error {
+	// Wait for the system tray to become ready before initializing
+	if !t.waitForSystrayReady(1 * time.Minute) {
+		// Handle the error appropriately
+		return fmt.Errorf("System tray was not ready in time")
+	}
+
 	const IDI_APPLICATION = 32512
 	const IDC_ARROW = 32512 // Standard arrow
 	// https://msdn.microsoft.com/en-us/library/windows/desktop/ms633548(v=vs.85).aspx

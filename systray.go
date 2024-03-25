@@ -16,8 +16,9 @@ var (
 	menuItems         = make(map[uint32]*MenuItem)
 	menuItemsLock     sync.RWMutex
 
-	currentID atomic.Uint32
-	quitOnce  sync.Once
+	currentID  atomic.Uint32
+	quitOnce   sync.Once
+	initFailed = make(chan struct{})
 )
 
 // This helper function allows us to call systrayExit only once,
@@ -101,7 +102,7 @@ func RunWithExternalLoop(onReady, onExit func()) (start, end func()) {
 // needs to show other UI elements, for example, webview.
 // To overcome some OS weirdness, On macOS versions before Catalina, calling
 // this does exactly the same as Run().
-func Register(onReady func(), onExit func()) {
+func Register(onReady func(), onExit func()) error {
 	if onReady == nil {
 		systrayReady = func() {}
 	} else {
