@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"lucidoc/systray/example/icon"
+	"github.com/lucidoc/systray/example/icon"
 
-	"lucidoc/systray/"
+	"github.com/lucidoc/systray"
 )
 
 func main() {

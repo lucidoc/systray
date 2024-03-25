@@ -19,8 +19,8 @@ import (
 	"github.com/godbus/dbus/v5/introspect"
 	"github.com/godbus/dbus/v5/prop"
 
-	"lucidoc/systray/internal/generated/menu"
-	"lucidoc/systray/internal/generated/notifier"
+	"github.com/lucidoc/systray/internal/generated/menu"
+	"github.com/lucidoc/systray/internal/generated/notifier"
 )
 
 const (

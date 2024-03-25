@@ -102,7 +102,7 @@ func RunWithExternalLoop(onReady, onExit func()) (start, end func()) {
 // needs to show other UI elements, for example, webview.
 // To overcome some OS weirdness, On macOS versions before Catalina, calling
 // this does exactly the same as Run().
-func Register(onReady func(), onExit func()) error {
+func Register(onReady func(), onExit func()) {
 	if onReady == nil {
 		systrayReady = func() {}
 	} else {
